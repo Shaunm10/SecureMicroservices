@@ -9,4 +9,12 @@
 <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
+<ItemGroup>
+  <None Remove="Controllers\" />
+  <None Remove="Model\" />
+</ItemGroup>
+<ItemGroup>
+  <Folder Include="Controllers\" />
+  <Folder Include="Model\" />
+</ItemGroup>
 </Project>
