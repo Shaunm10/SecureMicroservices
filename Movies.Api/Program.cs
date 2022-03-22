@@ -1,5 +1,12 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Movies.Api.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<MoviesApiContext>(options =>
+
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesApiContext")));
 
 // Add services to the container.
 
