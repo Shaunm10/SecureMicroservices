@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Movies.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MoviesApiContext>(options =>
-
-    //options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesApiContext")));
-    options.UseInMemoryDatabase("Movies"));
+    options.UseInMemoryDatabase("Movies")
+);
 
 // Add services to the container.
 builder.Services.AddControllers();

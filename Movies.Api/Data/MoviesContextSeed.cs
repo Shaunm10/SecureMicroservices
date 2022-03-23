@@ -5,7 +5,6 @@ namespace Movies.Api.Data;
 
 public class MoviesContextSeed
 {
-
     public static void SeedAsync(MoviesApiContext moviesContext)
     {
         if (!moviesContext.Movie.Any())
@@ -99,4 +98,3 @@ public class MoviesContextSeed
         }
     }
 }
-
