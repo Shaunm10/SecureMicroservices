@@ -8,10 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // adds Identity Server's DI services.
 builder.Services.AddIdentityServer()
     .AddInMemoryClients(Config.Clients)
-    .AddInMemoryIdentityResources(Config.IdentityResources)
-    .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryApiScopes(Config.ApiScopes)
-    .AddTestUsers(Config.TestUsers)
+    //.AddTestUsers(Config.TestUsers)
     .AddDeveloperSigningCredential();
 
 var app = builder.Build();
