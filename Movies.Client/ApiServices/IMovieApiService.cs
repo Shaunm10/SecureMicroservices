@@ -6,7 +6,7 @@ namespace Movies.Client.ApiServices
     {
         Task<IEnumerable<Movie>> GetMoviesAsync();
 
-        Task<Movie> GetMovieAsync(string id);
+        Task<Movie?> GetMovieAsync(string id);
 
         Task<Movie> CreateMovie(Movie movie);
 
