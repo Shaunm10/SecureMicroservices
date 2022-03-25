@@ -6,3 +6,5 @@
 |IdentityServer|[https://localhost:5005/.well-known/openid-configuration](https://localhost:5005/.well-known/openid-configuration)|
 |Movies.Client|[https://localhost:5002](https://localhost:5002)|
 
+TODO:
+- [ ] Add all configuration into strongly typed objects.
