@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 // adds Identity Server's DI services.
 builder.Services.AddIdentityServer()
     .AddInMemoryClients(Config.Clients)
+    
     .AddInMemoryApiScopes(Config.ApiScopes)
     .AddInMemoryApiResources(Config.ApiResources)
     .AddTestUsers(Config.TestUsers)
