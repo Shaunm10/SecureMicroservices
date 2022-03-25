@@ -13,6 +13,7 @@
             ConfigurationManager configuration)
         {
             services.Configure<OpenIdConnect>(configuration.GetSection("OpenIdConnect"));
+            services.Configure<ServiceUrls>(configuration.GetSection("ServiceUrls"));
             return services;
         }
     }

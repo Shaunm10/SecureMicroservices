@@ -66,7 +66,7 @@ public class Config
 
     public static IEnumerable<ApiScope> ApiScopes => new List<ApiScope>
     {
-        //new ApiScope(MovieApiName, "Movie API")
+        new ApiScope(MovieApiName, "Movie API"),
         new ApiScope( IdentityServerConstants.StandardScopes.OpenId),
         new ApiScope( IdentityServerConstants.StandardScopes.Profile)
 

@@ -1,6 +1,7 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Events;
@@ -171,6 +172,7 @@ namespace IdentityServerHost.Quickstart.UI
             var vm = await this.BuildLoginViewModelAsync(model);
             return this.View(vm);
         }
+
         
         /// <summary>
         /// Show logout page
