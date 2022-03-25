@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -14,6 +15,12 @@ builder.Services.AddCustomAppConfiguration(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IMovieApiService, MovieApiService>();
 
+var provider = builder.Services.BuildServiceProvider();
+
+var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
+var servicesUrlConfiguration = provider.GetService<IOptions<ServiceUrls>>().Value;
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -22,8 +29,6 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
-    var provider = builder.Services.BuildServiceProvider();
-    var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
    
     // the address of the IPD server
     options.Authority = openIdConnectConfiguration.Authority; 
@@ -48,18 +53,30 @@ builder.Services.AddAuthentication(options =>
 });
 
 // 1 create an HttpClient used for accessing the Movies.Api
-//builder.Services.AddTransient<AuthenticationDelegateHandler>();
+builder.Services.AddTransient<AuthenticationDelegateHandler>();
 
 builder.Services.AddHttpClient(ApiConfigurations.MovieClient, client =>
-{
-    var provider = builder.Services.BuildServiceProvider();
-    var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
-
-    client.BaseAddress = new Uri(openIdConnectConfiguration.Authority);
+{  
+    client.BaseAddress = new Uri(servicesUrlConfiguration.MovieApi);
     client.DefaultRequestHeaders.Clear();
     client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
 }).AddHttpMessageHandler<AuthenticationDelegateHandler>();
 
+builder.Services.AddHttpClient(ApiConfigurations.IDPClient, client =>
+{
+    client.BaseAddress = new Uri(openIdConnectConfiguration.Authority);
+    client.DefaultRequestHeaders.Clear();
+    client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+});
+
+
+builder.Services.AddSingleton(new ClientCredentialsTokenRequest
+{
+    Address = $"{openIdConnectConfiguration.Authority}/connect/token",
+    ClientId = "movieClient",
+    ClientSecret = openIdConnectConfiguration.ClientSecret,
+    Scope = openIdConnectConfiguration.MovieApiScope
+});
 
 var app = builder.Build();
 

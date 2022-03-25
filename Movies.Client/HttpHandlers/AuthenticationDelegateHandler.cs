@@ -1,15 +1,33 @@
-﻿namespace Movies.Client.HttpHandlers
+﻿using IdentityModel.Client;
+using Movies.Client.ApiServices;
+
+namespace Movies.Client.HttpHandlers;
+
+public class AuthenticationDelegateHandler : DelegatingHandler
 {
-    public class AuthenticationDelegateHandler : DelegatingHandler
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ClientCredentialsTokenRequest _tokenRequest;
+
+    public AuthenticationDelegateHandler(IHttpClientFactory httpClientFactory, ClientCredentialsTokenRequest tokenRequest)
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        this._tokenRequest = tokenRequest ?? throw new ArgumentNullException(nameof(tokenRequest));
+    }
+
+    protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var httpClient = this._httpClientFactory.CreateClient(ApiConfigurations.IDPClient);
+
+        var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(this._tokenRequest);
+
+        if (tokenResponse.IsError)
         {
-            return base.SendAsync(request, cancellationToken);
+            throw new ApplicationException(
+                $"Unable to call RequestClientCredentialsTokenAsync:{tokenResponse.HttpErrorReason} - {tokenResponse.Error}");
         }
 
-        protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return base.Send(request, cancellationToken);
-        }
+        request.SetBearerToken(tokenResponse.AccessToken);
+
+        return await base.SendAsync(request, cancellationToken);
     }
 }
