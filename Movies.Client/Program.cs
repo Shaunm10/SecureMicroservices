@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Movies.Client.ApiServices;
 using Movies.Client.Configuration;
+using Movies.Client.HttpHandlers;
 using NuGet.Packaging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,8 +45,21 @@ builder.Services.AddAuthentication(options =>
 
     // if we should get claims from the endpoint after authenticating.
     options.GetClaimsFromUserInfoEndpoint = openIdConnectConfiguration.GetClaimsFromUserInputEndpoint;
-
 });
+
+// 1 create an HttpClient used for accessing the Movies.Api
+//builder.Services.AddTransient<AuthenticationDelegateHandler>();
+
+builder.Services.AddHttpClient(ApiConfigurations.MovieClient, client =>
+{
+    var provider = builder.Services.BuildServiceProvider();
+    var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
+
+    client.BaseAddress = new Uri(openIdConnectConfiguration.Authority);
+    client.DefaultRequestHeaders.Clear();
+    client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+}).AddHttpMessageHandler<AuthenticationDelegateHandler>();
+
 
 var app = builder.Build();
 

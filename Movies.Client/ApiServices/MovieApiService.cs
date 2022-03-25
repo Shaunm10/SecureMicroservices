@@ -11,28 +11,50 @@ namespace Movies.Client.ApiServices
         private readonly ServiceUrls _serviceUrlsConfiguration;
         private readonly OpenIdConnect _openIdConnectConfiguration;
 
-        public MovieApiService(IOptionsSnapshot<OpenIdConnect> openIdConnectSnapshot, IOptionsSnapshot<ServiceUrls> serviceUrlsOptionsSnapshot)
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public MovieApiService(
+            IOptionsSnapshot<OpenIdConnect> openIdConnectSnapshot, 
+            IOptionsSnapshot<ServiceUrls> serviceUrlsOptionsSnapshot,
+            IHttpClientFactory httpClientFactory)
         {
+            this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this._serviceUrlsConfiguration = serviceUrlsOptionsSnapshot?.Value ?? throw new ArgumentNullException(nameof(serviceUrlsOptionsSnapshot));
             this._openIdConnectConfiguration = openIdConnectSnapshot?.Value ?? throw new ArgumentNullException(nameof(openIdConnectSnapshot));
         }
 
         public async Task<IEnumerable<Movie>> GetMoviesAsync()
         {
+
+            var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Movies");
+
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
+                .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
+            return movieList;
+
+            //var httpClient = 
+
             // get code_access token
-            var tokenResponse = await this.GetTokenResponseAsync();
+            //var tokenResponse = await this.GetTokenResponseAsync();
 
             // make request to endpoint
-            var apiClient = new HttpClient();
-            apiClient.SetBearerToken(tokenResponse.AccessToken);
-            var apiResponse = await apiClient.GetAsync($"{this._serviceUrlsConfiguration.MovieApi}/api/movies");
-            apiResponse.EnsureSuccessStatusCode();
+            //var apiClient = new HttpClient();
+            //apiClient.SetBearerToken(tokenResponse.AccessToken);
+            //var apiResponse = await apiClient.GetAsync($"{this._serviceUrlsConfiguration.MovieApi}/api/movies");
+            //apiResponse.EnsureSuccessStatusCode();
 
-            var content = await apiResponse.Content.ReadAsStringAsync();
+            //var content = await apiResponse.Content.ReadAsStringAsync();
 
-            // deserialize the response.
-            List<Movie> movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
-            return movieList;
+            //// deserialize the response.
+            //List<Movie> movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
+            //return movieList;
         }
 
         public Task<Movie?> GetMovieAsync(string id)
@@ -57,7 +79,6 @@ namespace Movies.Client.ApiServices
 
         private async Task<TokenResponse> GetTokenResponseAsync()
         {
-
             var apiClientCredentials = new ClientCredentialsTokenRequest
             {
                 Address = $"{this._openIdConnectConfiguration.Authority}/connect/token",
