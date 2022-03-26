@@ -21,18 +21,14 @@ public class MovieApiService : IMovieApiService
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
-    {
-        //var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
-
-        //var movieApi = new ServiceReferences.MoviesApi(this._serviceUrlsConfiguration.MovieApi, httpClient);
-
+    {   
         var movieApi = this.GetProxy();
 
         var serviceMovies = await movieApi.GetMoviesAsync();
 
-        var test = serviceMovies.Select(m => this.Map(m));
+        var moviesViewModels = serviceMovies.Select(m => this.Map(m));
 
-        return test.ToList();
+        return moviesViewModels.ToList();
 
     }
 

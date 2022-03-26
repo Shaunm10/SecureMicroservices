@@ -48,19 +48,18 @@ namespace Movies.Client.Controllers
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return this.View();
-            //if (!id.HasValue)
-            //{
-            //    return this.NotFound();
-            //}
+            if (!id.HasValue)
+            {
+                return this.NotFound();
+            }
 
-            //var movie = await this._movieApiService.GetMovieAsync(id.ToString());
-            //if (movie == null)
-            //{
-            //    return this.NotFound();
-            //}
+            var movie = await this._movieApiService.GetMovieAsync(id.Value);
+            if (movie == null)
+            {
+                return this.NotFound();
+            }
 
-            //return this.View(movie);
+            return this.View(movie);
         }
 
         // GET: Movies/Create
@@ -76,32 +75,31 @@ namespace Movies.Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Genre,Rating,ReleaseDate,ImageUrl,Owner")] Movie movie)
         {
-            return this.View();
-            //if (this.ModelState.IsValid)
-            //{
-            //    var createdMovie = await this._movieApiService.CreateMovie(movie);
-            //    return this.RedirectToAction(nameof(this.Index));
-            //}
 
-            //return this.View(movie);
+            if (this.ModelState.IsValid)
+            {
+                var createdMovie = await this._movieApiService.CreateMovie(movie);
+                return this.RedirectToAction(nameof(this.Index));
+            }
+
+            return this.View(movie);
         }
 
         // GET: Movies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            return this.View();
-            //if (!id.HasValue)
-            //{
-            //    return this.NotFound();
-            //}
+            if (!id.HasValue)
+            {
+                return this.NotFound();
+            }
 
-            //var movie = await this._movieApiService.GetMovieAsync(id.ToString());
-            //if (movie == null)
-            //{
-            //    return this.NotFound();
-            //}
+            var movie = await this._movieApiService.GetMovieAsync(id.Value);
+            if (movie == null)
+            {
+                return this.NotFound();
+            }
 
-            //return this.View(movie);
+            return this.View(movie);
         }
 
         // POST: Movies/Edit/5
@@ -111,40 +109,38 @@ namespace Movies.Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,Genre,Rating,ReleaseDate,ImageUrl,Owner")] Movie movie)
         {
-            return this.View();
-            //if (id != movie.Id)
-            //{
-            //    return this.NotFound();
-            //}
+            if (id != movie.Id)
+            {
+                return this.NotFound();
+            }
 
-            //if (this.ModelState.IsValid)
-            //{
+            if (this.ModelState.IsValid)
+            {
 
-            //    await this._movieApiService.UpdateMovie(movie);
+                await this._movieApiService.UpdateMovie(movie);
 
-            //    return this.RedirectToAction(nameof(this.Index));
-            //}
+                return this.RedirectToAction(nameof(this.Index));
+            }
 
-            //return this.View(movie);
+            return this.View(movie);
         }
 
         // GET: Movies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            return this.View();
-            //if (id.HasValue)
-            //{
-            //    return this.NotFound();
-            //}
+            if (id.HasValue)
+            {
+                return this.NotFound();
+            }
 
-            //var movie = await this._movieApiService.GetMovieAsync(id.ToString());
+            var movie = await this._movieApiService.GetMovieAsync(id);
 
-            //if (movie == null)
-            //{
-            //    return this.NotFound();
-            //}
+            if (movie == null)
+            {
+                return this.NotFound();
+            }
 
-            //return this.View(movie);
+            return this.View(movie);
         }
 
         // POST: Movies/Delete/5
