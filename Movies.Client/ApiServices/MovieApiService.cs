@@ -1,9 +1,6 @@
-﻿using IdentityModel.Client;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Movies.Client.Configuration;
-
 using Movies.Client.Models;
-using Newtonsoft.Json;
 
 namespace Movies.Client.ApiServices;
 

@@ -54,9 +54,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-// app.UseRouting();
-
 // perform Authentication on every request.
 app.UseAuthentication();
 app.UseAuthorization();

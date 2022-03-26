@@ -31,7 +31,7 @@ public class Config
                     ClientId = "movies_mvc_client",         // must be unique
                     ClientName = "Movies MVC Web App",      // a description of whom the client is.
                     AllowedGrantTypes = GrantTypes.Code,    // basically which flow we are using to get the token
-                    AllowRememberConsent = false,           
+                    AllowRememberConsent = false,
                     RedirectUris = new List<string>
                     {
                         "https://localhost:5002/signin-oidc" // this is the client app port
