@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -128,12 +127,12 @@ namespace Movies.Client.Controllers
         // GET: Movies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id.HasValue)
+            if (!id.HasValue)
             {
                 return this.NotFound();
             }
 
-            var movie = await this._movieApiService.GetMovieAsync(id);
+            var movie = await this._movieApiService.GetMovieAsync(id.Value);
 
             if (movie == null)
             {

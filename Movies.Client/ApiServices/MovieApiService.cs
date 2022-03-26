@@ -21,7 +21,7 @@ public class MovieApiService : IMovieApiService
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
-    {   
+    {
         var movieApi = this.GetProxy();
 
         var serviceMovies = await movieApi.GetMoviesAsync();
@@ -29,7 +29,6 @@ public class MovieApiService : IMovieApiService
         var moviesViewModels = serviceMovies.Select(m => this.Map(m));
 
         return moviesViewModels.ToList();
-
     }
 
     public async Task<Movie?> GetMovieAsync(int id)
@@ -76,7 +75,7 @@ public class MovieApiService : IMovieApiService
             ImageUrl = movieFromService.ImageUrl,
             Owner = movieFromService.Owner,
             Rating = movieFromService.Rating,
-            ReleaseDate = DateTime.Parse(movieFromService.ReleaseDate.ToString()),
+            ReleaseDate = DateTime.Parse(movieFromService?.ReleaseDate?.ToString()),
             Title = movieFromService.Title
         };
     }
