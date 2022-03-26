@@ -159,7 +159,7 @@ namespace Movies.Client.Controllers
 
         private async Task<bool> MovieExists(int? id)
         {
-            var movie = await this._movieApiService.GetMovieAsync(id.ToString());
+            var movie = await this._movieApiService.GetMovieAsync(id.GetValueOrDefault());
             return movie != null;
         }
     }

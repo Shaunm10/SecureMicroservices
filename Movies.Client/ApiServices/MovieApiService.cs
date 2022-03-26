@@ -1,97 +1,101 @@
 ﻿using IdentityModel.Client;
 using Microsoft.Extensions.Options;
 using Movies.Client.Configuration;
+
 using Movies.Client.Models;
 using Newtonsoft.Json;
 
-namespace Movies.Client.ApiServices
+namespace Movies.Client.ApiServices;
+
+public class MovieApiService : IMovieApiService
 {
-    public class MovieApiService : IMovieApiService
+    private readonly ServiceUrls _serviceUrlsConfiguration;
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public MovieApiService(
+        IOptionsSnapshot<ServiceUrls> serviceUrlsOptionsSnapshot,
+        IHttpClientFactory httpClientFactory)
     {
-        private readonly ServiceUrls _serviceUrlsConfiguration;
-        private readonly IHttpClientFactory _httpClientFactory;
+        this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        this._serviceUrlsConfiguration = serviceUrlsOptionsSnapshot?.Value ?? throw new ArgumentNullException(nameof(serviceUrlsOptionsSnapshot));
+    }
 
-        public MovieApiService(
-            IOptionsSnapshot<ServiceUrls> serviceUrlsOptionsSnapshot,
-            IHttpClientFactory httpClientFactory)
+    public async Task<IEnumerable<Movie>> GetMoviesAsync()
+    {
+        //var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
+
+        //var movieApi = new ServiceReferences.MoviesApi(this._serviceUrlsConfiguration.MovieApi, httpClient);
+
+        var movieApi = this.GetProxy();
+
+        var serviceMovies = await movieApi.GetMoviesAsync();
+
+        var test = serviceMovies.Select(m => this.Map(m));
+
+        return test.ToList();
+
+    }
+
+    public async Task<Movie?> GetMovieAsync(int id)
+    {
+        var proxy = this.GetProxy();
+        var m = await proxy.GetMovieAsync(id);
+        return this.Map(m);
+    }
+
+    public async Task<Movie> CreateMovie(Movie movie)
+    {
+        var proxy = this.GetProxy();
+        var createdMovie = await proxy.PostMovieAsync(this.Map(movie));
+        return this.Map(createdMovie);
+    }
+
+    public async Task UpdateMovie(Movie movie)
+    {
+        var proxy = this.GetProxy();
+        await proxy.PutMovieAsync(movie.Id.GetValueOrDefault(), this.Map(movie));
+    }
+
+    public async Task DeleteMovie(int id)
+    {
+        var proxy = this.GetProxy();
+        await proxy.DeleteMovieAsync(id);
+    }
+
+    private ServiceReferences.MoviesApi GetProxy()
+    {
+        var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
+
+        var movieApi = new ServiceReferences.MoviesApi(this._serviceUrlsConfiguration.MovieApi, httpClient);
+
+        return movieApi;
+    }
+
+    private Movie Map(ServiceReferences.Movie movieFromService)
+    {
+        return new Movie
         {
-            this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this._serviceUrlsConfiguration = serviceUrlsOptionsSnapshot?.Value ?? throw new ArgumentNullException(nameof(serviceUrlsOptionsSnapshot));
-        }
+            Genre = movieFromService.Genre,
+            Id = movieFromService.Id,
+            ImageUrl = movieFromService.ImageUrl,
+            Owner = movieFromService.Owner,
+            Rating = movieFromService.Rating,
+            ReleaseDate = DateTime.Parse(movieFromService.ReleaseDate.ToString()),
+            Title = movieFromService.Title
+        };
+    }
 
-        public async Task<IEnumerable<Movie>> GetMoviesAsync()
+    private ServiceReferences.Movie Map(Movie movie)
+    {
+        return new ServiceReferences.Movie
         {
-            var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
-
-            var movieApi = new ServiceReferences.MoviesApi(this._serviceUrlsConfiguration.MovieApi, httpClient);
-
-            var serviceMovies = await movieApi.GetMoviesAsync();
-
-            var test = serviceMovies.Select(m => new Movie
-            {
-                Title = m.Title,
-                Genre = m.Genre,
-                ReleaseDate = DateTime.Parse(m.ReleaseDate.ToString()),
-                ImageUrl = m.ImageUrl,
-                Owner = m.Owner,
-                Id = m.Id,
-                Rating = m.Rating
-            });
-
-            return test.ToList();
-           
-        }
-
-        public Task<Movie?> GetMovieAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Movie> CreateMovie(Movie movie)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Movie> UpdateMovie(Movie movie)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteMovie(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        //private async Task<TokenResponse> GetTokenResponseAsync()
-        //{
-        //    var apiClientCredentials = new ClientCredentialsTokenRequest
-        //    {
-        //        Address = $"{this._openIdConnectConfiguration.Authority}/connect/token",
-        //        ClientId = "movieClient", //this._openIdConnectConfiguration.ClientId,
-        //        ClientSecret = this._openIdConnectConfiguration.ClientSecret,
-
-        //        // this is the scope our Protected Api requires.
-        //        Scope = this._openIdConnectConfiguration.MovieApiScope
-        //    };
-
-        //    // create a new HttpClient to talk to our IdentityServer
-        //    // TODO: pull from httpClientFactory
-        //    var client = new HttpClient();
-
-        //    var disco = await client.GetDiscoveryDocumentAsync(this._openIdConnectConfiguration.Authority);
-        //    if (disco.IsError)
-        //    {
-        //        throw new ApplicationException($"Unable to retrieve discovery document: {disco.Error}");
-        //    }
-
-        //    // authenticate and get an access token from Identity Server
-        //    var tokenResponse = await client.RequestClientCredentialsTokenAsync(apiClientCredentials);
-        //    if (tokenResponse.IsError)
-        //    {
-        //        throw new ApplicationException($"Unable to retrieve credential response: {tokenResponse.Error}");
-        //    }
-
-        //    return tokenResponse;
-        //}
+            Genre = movie.Genre,
+            Id = movie.Id,
+            ImageUrl = movie.ImageUrl,
+            Owner = movie.Owner,
+            Rating = movie.Rating,
+            ReleaseDate = DateTimeOffset.Parse(movie.ReleaseDate.ToString()),
+            Title = movie.Title
+        };
     }
 }
