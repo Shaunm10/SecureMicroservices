@@ -24,7 +24,7 @@ namespace IdentityServerHost.Quickstart.UI
 
         public string? Description { get; set; }
 
-        public DateTime? Created { get; set; }
+        public DateTime Created { get; set; }
 
         public DateTime? Expires { get; set; }
 

@@ -32,7 +32,7 @@ public class MoviesController : ControllerBase
 
     // GET: api/Movies/5
     [HttpGet("{id}", Name = "GetMovie")]
-    [SwaggerResponse(StatusCodes.Status200OK, Type=typeof(Movie))]
+    [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Movie))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
     [SwaggerOperation(OperationId = "GetMovie")]
     public async Task<ActionResult<Movie>> GetMovie(int? id)
@@ -49,7 +49,7 @@ public class MoviesController : ControllerBase
 
     // PUT: api/Movies/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}",Name = "PutMovie")]
+    [HttpPut("{id}", Name = "PutMovie")]
     [SwaggerOperation(OperationId = "PutMovie")]
     public async Task<IActionResult> PutMovie(int? id, Movie movie)
     {
@@ -83,16 +83,18 @@ public class MoviesController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost(Name = "PostMovie")]
     [SwaggerOperation(OperationId = "PostMovie")]
+    [SwaggerResponse(StatusCodes.Status201Created)]
     public async Task<ActionResult<Movie>> PostMovie(Movie movie)
     {
         this._context.Movie.Add(movie);
         await this._context.SaveChangesAsync();
 
-        return this.CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
+        return movie;
+        //return this.CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
     }
 
     // DELETE: api/Movies/5
-    [HttpDelete("{id}",Name = "DeleteMovie")]
+    [HttpDelete("{id}", Name = "DeleteMovie")]
     [SwaggerOperation(OperationId = "DeleteMovie")]
     public async Task<IActionResult> DeleteMovie(int? id)
     {
