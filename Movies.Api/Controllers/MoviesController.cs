@@ -83,7 +83,7 @@ public class MoviesController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost(Name = "PostMovie")]
     [SwaggerOperation(OperationId = "PostMovie")]
-    [SwaggerResponse(StatusCodes.Status201Created)]
+    [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Movie))]
     public async Task<ActionResult<Movie>> PostMovie(Movie movie)
     {
         this._context.Movie.Add(movie);

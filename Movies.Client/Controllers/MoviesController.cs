@@ -146,10 +146,9 @@ namespace Movies.Client.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
-        {
-            return this.View();
-            //await this._movieApiService.DeleteMovie(id.Value);
-            //return this.RedirectToAction(nameof(this.Index));
+        {  
+            await this._movieApiService.DeleteMovie(id.Value);
+            return this.RedirectToAction(nameof(this.Index));
         }
 
         private async Task<bool> MovieExists(int? id)
