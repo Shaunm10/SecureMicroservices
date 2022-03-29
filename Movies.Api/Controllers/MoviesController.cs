@@ -90,7 +90,6 @@ public class MoviesController : ControllerBase
         await this._context.SaveChangesAsync();
 
         return movie;
-        //return this.CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
     }
 
     // DELETE: api/Movies/5

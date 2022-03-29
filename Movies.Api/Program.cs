@@ -9,8 +9,7 @@ const string BearerSchema = "Bearer";
 const string IDPAuthorityUrl = "https://localhost:5005";
 
 builder.Services.AddDbContext<MoviesApiContext>(options =>
-    options.UseInMemoryDatabase("Movies")
-);
+    options.UseInMemoryDatabase("Movies"));
 
 // Add services to the container.
 builder.Services.AddControllers();
