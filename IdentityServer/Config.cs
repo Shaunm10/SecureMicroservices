@@ -16,21 +16,22 @@ public class Config
         {
             return new List<Client>
             {
-                new Client
-                {
-                    ClientId = "movieClient", // unique name of the client
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = { MovieApiName }
-                },
+                //new Client
+                //{
+                //    ClientId = "movieClient", // unique name of the client
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    ClientSecrets =
+                //    {
+                //        new Secret("secret".Sha256())
+                //    },
+                //    AllowedScopes = { MovieApiName }
+                //},
                 new Client
                 {
                     ClientId = "movies_mvc_client",         // must be unique
                     ClientName = "Movies MVC Web App",      // a description of whom the client is.
-                    AllowedGrantTypes = GrantTypes.Code,    // basically which flow we are using to get the token
+                    AllowedGrantTypes = GrantTypes.Hybrid,    // basically which flow we are using to get the token
+                    RequirePkce = false,
                     AllowRememberConsent = false,
                     RedirectUris = new List<string>
                     {
@@ -49,7 +50,8 @@ public class Config
                     {
                         // the scopes this client is allowed to have.
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        MovieApiName
                     }
                 }
             };
