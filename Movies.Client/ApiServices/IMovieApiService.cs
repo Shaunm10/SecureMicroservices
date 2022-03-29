@@ -6,11 +6,11 @@ namespace Movies.Client.ApiServices
     {
         Task<IEnumerable<Movie>> GetMoviesAsync();
 
-        Task<Movie?> GetMovieAsync(string id);
+        Task<Movie?> GetMovieAsync(int id);
 
         Task<Movie> CreateMovie(Movie movie);
 
-        Task<Movie> UpdateMovie(Movie movie);
+        Task UpdateMovie(Movie movie);
 
         Task DeleteMovie(int id);
     }

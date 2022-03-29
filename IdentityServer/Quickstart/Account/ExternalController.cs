@@ -58,19 +58,20 @@ namespace IdentityServerHost.Quickstart.UI
                 // user might have clicked on a malicious link - should be logged
                 throw new Exception("invalid return URL");
             }
-
+            
             // start challenge and roundtrip the return URL and scheme 
             var props = new AuthenticationProperties
             {
-                RedirectUri = this.Url.Action(nameof(this.Callback)),
+                RedirectUri = this.Url.Action(nameof(this.Callback)), 
                 Items =
                 {
-                    { "returnUrl", returnUrl },
+                    { "returnUrl", returnUrl }, 
                     { "scheme", scheme },
                 }
             };
 
             return this.Challenge(props, scheme);
+            
         }
 
         /// <summary>

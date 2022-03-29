@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Movies.Api.Data;
 using Movies.Api.Model;
 using Movies.Api.Utility;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Movies.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(AuthenticationPolicy.ClientIdPolicy)]
+[Consumes("application/json")]
+[Produces("application/json")]
 public class MoviesController : ControllerBase
 {
     private readonly MoviesApiContext _context;
@@ -20,14 +23,18 @@ public class MoviesController : ControllerBase
     }
 
     // GET: api/Movies
-    [HttpGet]
+    [HttpGet(Name = "GetMovies")]
+    [SwaggerOperation(OperationId = "GetMovies")]
     public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
     {
         return await this._context.Movie.ToListAsync();
     }
 
     // GET: api/Movies/5
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetMovie")]
+    [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Movie))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(OperationId = "GetMovie")]
     public async Task<ActionResult<Movie>> GetMovie(int? id)
     {
         var movie = await this._context.Movie.FindAsync(id);
@@ -42,7 +49,8 @@ public class MoviesController : ControllerBase
 
     // PUT: api/Movies/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "PutMovie")]
+    [SwaggerOperation(OperationId = "PutMovie")]
     public async Task<IActionResult> PutMovie(int? id, Movie movie)
     {
         if (id != movie.Id)
@@ -73,17 +81,21 @@ public class MoviesController : ControllerBase
 
     // POST: api/Movies
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
+    [HttpPost(Name = "PostMovie")]
+    [SwaggerOperation(OperationId = "PostMovie")]
+    [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(Movie))]
     public async Task<ActionResult<Movie>> PostMovie(Movie movie)
     {
         this._context.Movie.Add(movie);
         await this._context.SaveChangesAsync();
 
-        return this.CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
+        return movie;
+        //return this.CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
     }
 
     // DELETE: api/Movies/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteMovie")]
+    [SwaggerOperation(OperationId = "DeleteMovie")]
     public async Task<IActionResult> DeleteMovie(int? id)
     {
         var movie = await this._context.Movie.FindAsync(id);

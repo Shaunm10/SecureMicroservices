@@ -15,4 +15,6 @@
         public bool SaveTokens { get; set; }
 
         public bool GetClaimsFromUserInputEndpoint { get; set; }
+
+        public string MovieApiScope { get; set; }
     }

@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Movies.Api;
 using Movies.Api.Data;
 using Movies.Api.Utility;
 
@@ -53,9 +50,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
-// app.UseRouting();
 
 // perform Authentication on every request.
 app.UseAuthentication();

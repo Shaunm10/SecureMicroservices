@@ -24,14 +24,14 @@ public class Config
                     {
                         new Secret("secret".Sha256())
                     },
-                    AllowedScopes = {MovieApiName}
+                    AllowedScopes = { MovieApiName }
                 },
                 new Client
                 {
                     ClientId = "movies_mvc_client",         // must be unique
                     ClientName = "Movies MVC Web App",      // a description of whom the client is.
                     AllowedGrantTypes = GrantTypes.Code,    // basically which flow we are using to get the token
-                    AllowRememberConsent = false,           //
+                    AllowRememberConsent = false,
                     RedirectUris = new List<string>
                     {
                         "https://localhost:5002/signin-oidc" // this is the client app port
@@ -66,10 +66,9 @@ public class Config
 
     public static IEnumerable<ApiScope> ApiScopes => new List<ApiScope>
     {
-        //new ApiScope(MovieApiName, "Movie API")
-        new ApiScope( IdentityServerConstants.StandardScopes.OpenId),
-        new ApiScope( IdentityServerConstants.StandardScopes.Profile)
-
+        new ApiScope(MovieApiName, "Movie API"),
+        new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
+        new ApiScope(IdentityServerConstants.StandardScopes.Profile)
     };
 
     public static List<TestUser> TestUsers => new List<TestUser>
@@ -81,8 +80,8 @@ public class Config
             Password = "player1",
             Claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.GivenName,"Player"),
-                new Claim(JwtClaimTypes.FamilyName,"One")
+                new Claim(JwtClaimTypes.GivenName, "Player"),
+                new Claim(JwtClaimTypes.FamilyName, "One")
             }
         }
     };
