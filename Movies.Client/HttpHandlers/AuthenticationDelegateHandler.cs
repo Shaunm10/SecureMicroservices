@@ -1,32 +1,27 @@
 ﻿using IdentityModel.Client;
-using Movies.Client.ApiServices;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Movies.Client.HttpHandlers;
 
 public class AuthenticationDelegateHandler : DelegatingHandler
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ClientCredentialsTokenRequest _tokenRequest;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticationDelegateHandler(IHttpClientFactory httpClientFactory, ClientCredentialsTokenRequest tokenRequest)
+    public AuthenticationDelegateHandler(IHttpContextAccessor httpContextAccessor)
     {
-        this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        this._tokenRequest = tokenRequest ?? throw new ArgumentNullException(nameof(tokenRequest));
+        this._httpContextAccessor = httpContextAccessor;
     }
 
     protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var httpClient = this._httpClientFactory.CreateClient(ApiConfigurations.IDPClient);
+        var accessToken =
+            await this._httpContextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
-        var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(this._tokenRequest);
-
-        if (tokenResponse.IsError)
+        if (!string.IsNullOrWhiteSpace(accessToken))
         {
-            throw new ApplicationException(
-                $"Unable to call RequestClientCredentialsTokenAsync:{tokenResponse.HttpErrorReason} - {tokenResponse.Error}");
+            request.SetBearerToken(accessToken);
         }
-
-        request.SetBearerToken(tokenResponse.AccessToken);
 
         return await base.SendAsync(request, cancellationToken);
     }

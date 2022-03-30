@@ -73,13 +73,16 @@ builder.Services.AddHttpClient(ApiConfigurations.IDPClient, client =>
 });
 
 
-builder.Services.AddSingleton(new ClientCredentialsTokenRequest
-{
-    Address = $"{openIdConnectConfiguration.Authority}/connect/token",
-    ClientId = "movieClient",
-    ClientSecret = openIdConnectConfiguration.ClientSecret,
-    Scope = openIdConnectConfiguration.MovieApiScope
-});
+//builder.Services.AddSingleton(new ClientCredentialsTokenRequest
+//{
+//    Address = $"{openIdConnectConfiguration.Authority}/connect/token",
+//    ClientId = "movieClient",
+//    ClientSecret = openIdConnectConfiguration.ClientSecret,
+//    Scope = openIdConnectConfiguration.MovieApiScope
+//});
+
+builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 

@@ -16,21 +16,22 @@ public class Config
         {
             return new List<Client>
             {
-                new Client
-                {
-                    ClientId = "movieClient", // unique name of the client
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets =
-                    {
-                        new Secret("secret".Sha256())
-                    },
-                    AllowedScopes = { MovieApiName }
-                },
+                //new Client
+                //{
+                //    ClientId = "movieClient", // unique name of the client
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    ClientSecrets =
+                //    {
+                //        new Secret("secret".Sha256())
+                //    },
+                //    AllowedScopes = { MovieApiName }
+                //},
                 new Client
                 {
                     ClientId = "movies_mvc_client",         // must be unique
                     ClientName = "Movies MVC Web App",      // a description of whom the client is.
-                    AllowedGrantTypes = GrantTypes.Code,    // basically which flow we are using to get the token
+                    AllowedGrantTypes = GrantTypes.Hybrid,    // basically which flow we are using to get the token
+                    RequirePkce = false,
                     AllowRememberConsent = false,
                     RedirectUris = new List<string>
                     {
@@ -49,7 +50,8 @@ public class Config
                     {
                         // the scopes this client is allowed to have.
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        MovieApiName
                     }
                 }
             };
@@ -61,14 +63,15 @@ public class Config
     public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
     {
         new IdentityResources.OpenId(),
-        new IdentityResources.Profile()
+        new IdentityResources.Profile(),
+        //new IdentityResource(MovieApiName,"Movie API")
     };
 
     public static IEnumerable<ApiScope> ApiScopes => new List<ApiScope>
     {
         new ApiScope(MovieApiName, "Movie API"),
-        new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
-        new ApiScope(IdentityServerConstants.StandardScopes.Profile)
+        //new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
+        //new ApiScope(IdentityServerConstants.StandardScopes.Profile)
     };
 
     public static List<TestUser> TestUsers => new List<TestUser>
