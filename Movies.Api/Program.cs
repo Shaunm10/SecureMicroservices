@@ -29,7 +29,11 @@ builder.Services.AddAuthentication(BearerSchema).AddJwtBearer(BearerSchema, opti
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(AuthenticationPolicy.ClientIdPolicy, policy => policy.RequireClaim(ClaimNames.ClientId, ClaimNames.MovieClient));
+    options.AddPolicy(AuthenticationPolicy.ClientIdPolicy, policy => policy.RequireClaim(
+        ClaimNames.ClientId, 
+        ClaimNames.MovieClient, 
+        ClaimNames.MoviesMvcClient)
+    );
 });
 
 var app = builder.Build();

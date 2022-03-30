@@ -63,14 +63,15 @@ public class Config
     public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
     {
         new IdentityResources.OpenId(),
-        new IdentityResources.Profile()
+        new IdentityResources.Profile(),
+        //new IdentityResource(MovieApiName,"Movie API")
     };
 
     public static IEnumerable<ApiScope> ApiScopes => new List<ApiScope>
     {
         new ApiScope(MovieApiName, "Movie API"),
-        new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
-        new ApiScope(IdentityServerConstants.StandardScopes.Profile)
+        //new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
+        //new ApiScope(IdentityServerConstants.StandardScopes.Profile)
     };
 
     public static List<TestUser> TestUsers => new List<TestUser>
