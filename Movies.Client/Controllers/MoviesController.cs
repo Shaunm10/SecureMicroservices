@@ -151,6 +151,13 @@ namespace Movies.Client.Controllers
             return this.RedirectToAction(nameof(this.Index));
         }
 
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> OnlyAdmin()
+        {
+            UserInfoViewModel userInfo = await this._movieApiService.GetUserInfoAsync();
+            return this.View(userInfo);
+        }
+
         private async Task<bool> MovieExists(int? id)
         {
             var movie = await this._movieApiService.GetMovieAsync(id.GetValueOrDefault());
