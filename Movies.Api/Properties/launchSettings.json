@@ -12,7 +12,7 @@
     "Movies.Api": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger/index.html",
       "applicationUrl": "https://localhost:5001",
       "environmentVariables": {

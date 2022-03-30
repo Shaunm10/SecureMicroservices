@@ -1,7 +1,10 @@
-﻿using IdentityModel.Client;
+﻿using IdentityModel;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Movies.Client.ApiServices;
 using Movies.Client.Configuration;
@@ -46,10 +49,18 @@ builder.Services.AddAuthentication(options =>
     // the scopes we are requesting
     options.Scope.AddRange(openIdConnectConfiguration.Scopes);
 
+    options.ClaimActions.MapUniqueJsonKey("role", "role");
+
     options.SaveTokens = openIdConnectConfiguration.SaveTokens;
 
     // if we should get claims from the endpoint after authenticating.
     options.GetClaimsFromUserInfoEndpoint = openIdConnectConfiguration.GetClaimsFromUserInputEndpoint;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        NameClaimType = JwtClaimTypes.GivenName,
+        RoleClaimType = JwtClaimTypes.Role
+    };
 });
 
 // 1 create an HttpClient used for accessing the Movies.Api
