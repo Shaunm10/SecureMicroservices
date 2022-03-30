@@ -21,7 +21,6 @@ var provider = builder.Services.BuildServiceProvider();
 var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
 var servicesUrlConfiguration = provider.GetService<IOptions<ServiceUrls>>().Value;
 
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

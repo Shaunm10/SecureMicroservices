@@ -9,6 +9,7 @@ namespace IdentityServer;
 public class Config
 {
     private const string MovieApiName = "movieAPI";
+    private const string RolesScope = "roles";
 
     public static IEnumerable<Client> Clients
     {
@@ -16,16 +17,6 @@ public class Config
         {
             return new List<Client>
             {
-                //new Client
-                //{
-                //    ClientId = "movieClient", // unique name of the client
-                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                //    ClientSecrets =
-                //    {
-                //        new Secret("secret".Sha256())
-                //    },
-                //    AllowedScopes = { MovieApiName }
-                //},
                 new Client
                 {
                     ClientId = "movies_mvc_client",         // must be unique
@@ -51,7 +42,10 @@ public class Config
                         // the scopes this client is allowed to have.
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        MovieApiName
+                        IdentityServerConstants.StandardScopes.Address,
+                        IdentityServerConstants.StandardScopes.Email,
+                        MovieApiName,
+                        RolesScope
                     }
                 }
             };
@@ -60,18 +54,24 @@ public class Config
 
     public static IEnumerable<ApiResource> ApiResources => new List<ApiResource>();
 
+    /// <summary>
+    /// These are the claims about the user.
+    /// </summary>
     public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
     {
         new IdentityResources.OpenId(),
         new IdentityResources.Profile(),
-        //new IdentityResource(MovieApiName,"Movie API")
+        new IdentityResources.Address(),
+        new IdentityResources.Email(),
+        new IdentityResource(RolesScope,"Your role(s)",new List<string>
+        {
+            "role"
+        })
     };
 
     public static IEnumerable<ApiScope> ApiScopes => new List<ApiScope>
     {
-        new ApiScope(MovieApiName, "Movie API"),
-        //new ApiScope(IdentityServerConstants.StandardScopes.OpenId),
-        //new ApiScope(IdentityServerConstants.StandardScopes.Profile)
+        new ApiScope(MovieApiName, "Movie API")
     };
 
     public static List<TestUser> TestUsers => new List<TestUser>

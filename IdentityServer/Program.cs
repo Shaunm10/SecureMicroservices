@@ -1,4 +1,5 @@
 using IdentityServer;
+using IdentityServerHost.Quickstart.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddIdentityServer()
     .AddInMemoryApiScopes(Config.ApiScopes)
     //.AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryIdentityResources(Config.IdentityResources)
-    .AddTestUsers(Config.TestUsers)
+    //.AddTestUsers(Config.TestUsers)
+    .AddTestUsers(TestUsers.Users)
     .AddDeveloperSigningCredential();
 
 var app = builder.Build();
