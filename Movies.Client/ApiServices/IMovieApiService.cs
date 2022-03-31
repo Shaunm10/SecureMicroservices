@@ -13,5 +13,7 @@ namespace Movies.Client.ApiServices
         Task UpdateMovie(Movie movie);
 
         Task DeleteMovie(int id);
+
+        Task<UserInfoViewModel> GetUserInfoAsync();
     }
 }

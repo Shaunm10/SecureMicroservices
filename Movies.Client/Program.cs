@@ -1,7 +1,11 @@
-﻿using IdentityModel.Client;
+﻿using System.Net;
+using IdentityModel;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Movies.Client.ApiServices;
 using Movies.Client.Configuration;
@@ -21,16 +25,24 @@ var provider = builder.Services.BuildServiceProvider();
 var openIdConnectConfiguration = provider.GetService<IOptions<OpenIdConnect>>().Value;
 var servicesUrlConfiguration = provider.GetService<IOptions<ServiceUrls>>().Value;
 
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToAccessDenied = context =>
+        {
+            context.Response.Redirect($"{openIdConnectConfiguration.Authority}/Account/AccessDenied");
+            return Task.CompletedTask;
+        }
+    };
+})
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
-
     // the address of the IPD server
     options.Authority = openIdConnectConfiguration.Authority;
 
@@ -47,10 +59,18 @@ builder.Services.AddAuthentication(options =>
     // the scopes we are requesting
     options.Scope.AddRange(openIdConnectConfiguration.Scopes);
 
+    options.ClaimActions.MapUniqueJsonKey("role", "role");
+
     options.SaveTokens = openIdConnectConfiguration.SaveTokens;
 
     // if we should get claims from the endpoint after authenticating.
     options.GetClaimsFromUserInfoEndpoint = openIdConnectConfiguration.GetClaimsFromUserInputEndpoint;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        NameClaimType = JwtClaimTypes.GivenName,
+        RoleClaimType = JwtClaimTypes.Role
+    };
 });
 
 // 1 create an HttpClient used for accessing the Movies.Api
@@ -83,8 +103,16 @@ builder.Services.AddHttpClient(ApiConfigurations.IDPClient, client =>
 
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
+
+//app.UseStatusCodePages(async context =>
+//{
+//    // 403
+//    if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.Forbidden)
+//    {
+//        var foo = "bar";
+//    }
+//});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

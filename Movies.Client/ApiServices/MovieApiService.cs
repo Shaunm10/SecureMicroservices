@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Options;
+﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Movies.Client.Configuration;
 using Movies.Client.Models;
 
@@ -8,13 +11,16 @@ public class MovieApiService : IMovieApiService
 {
     private readonly ServiceUrls _serviceUrlsConfiguration;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public MovieApiService(
         IOptionsSnapshot<ServiceUrls> serviceUrlsOptionsSnapshot,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IHttpContextAccessor httpContextAccessor)
     {
         this._httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         this._serviceUrlsConfiguration = serviceUrlsOptionsSnapshot?.Value ?? throw new ArgumentNullException(nameof(serviceUrlsOptionsSnapshot));
+        this._httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
@@ -54,9 +60,47 @@ public class MovieApiService : IMovieApiService
         await proxy.DeleteMovieAsync(id);
     }
 
+    public async Task<UserInfoViewModel> GetUserInfoAsync()
+    {
+        var idpClient = this._httpClientFactory.CreateClient(ApiConfigurations.IDPClient);
+
+        // get the MetaData from the discovery document
+        var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
+        if (metaDataResponse.IsError)
+        {
+            throw new HttpRequestException("Something went wrong while requesting the access token");
+        }
+
+        // get the access token from the HttpContext
+        var accessToken =
+            await this._httpContextAccessor.HttpContext?.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+
+        // get the userInfo passing the access token to the userInfo endpoint.
+        var userInfoResponse = await idpClient.GetUserInfoAsync(new UserInfoRequest
+        {
+            Address = metaDataResponse.UserInfoEndpoint,
+            Token = accessToken
+        });
+
+        // if an error occurred
+        if (userInfoResponse.IsError)
+        {
+            throw new HttpRequestException("Something went wrong while getting user info");
+        }
+
+        var userInfoDictionary = new Dictionary<string, string>();
+
+        foreach (var claim in userInfoResponse.Claims)
+        {
+            userInfoDictionary.Add(claim.Type, claim.Value);
+        }
+
+        return new UserInfoViewModel(userInfoDictionary);
+    }
+
     private ServiceReferences.MoviesApi GetProxy()
     {
-        var httpClient = this._httpClientFactory.CreateClient("MovieAPIClient");
+        var httpClient = this._httpClientFactory.CreateClient(ApiConfigurations.MovieClient);
 
         var movieApi = new ServiceReferences.MoviesApi(this._serviceUrlsConfiguration.MovieApi, httpClient);
 
