@@ -1,5 +1,6 @@
-﻿using IdentityModel;
-using IdentityModel.Client;
+﻿using System.Net;
+using IdentityModel;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -29,10 +30,19 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToAccessDenied = context =>
+        {
+            context.Response.Redirect($"{openIdConnectConfiguration.Authority}/Account/AccessDenied");
+            return Task.CompletedTask;
+        }
+    };
+})
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
-
     // the address of the IPD server
     options.Authority = openIdConnectConfiguration.Authority;
 
@@ -93,8 +103,16 @@ builder.Services.AddHttpClient(ApiConfigurations.IDPClient, client =>
 
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
+
+//app.UseStatusCodePages(async context =>
+//{
+//    // 403
+//    if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.Forbidden)
+//    {
+//        var foo = "bar";
+//    }
+//});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
