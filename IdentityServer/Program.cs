@@ -1,9 +1,15 @@
 using IdentityServer;
+using IdentityServer.Data.Migrations;
 using IdentityServerHost.Quickstart.UI;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+var identityConnection = builder.Configuration.GetConnectionString("IdentityConnectionString");
+var migrationsAssembly = "IdentityServer";//typeof(Config).GetType().Assembly.GetName().Name;
 
 // adds Identity Server's DI services.
 builder.Services.AddIdentityServer()
@@ -13,7 +19,13 @@ builder.Services.AddIdentityServer()
     .AddInMemoryIdentityResources(Config.IdentityResources)
     //.AddTestUsers(Config.TestUsers)
     .AddTestUsers(TestUsers.Users)
-    .AddDeveloperSigningCredential();
+    .AddDeveloperSigningCredential()
+    .AddConfigurationStore(options => {
+        options.ConfigureDbContext = d => d.UseSqlServer(identityConnection, 
+        sql => sql.MigrationsAssembly(migrationsAssembly));
+    }).AddOperationalStore(options => {
+        options.ConfigureDbContext = b => b.UseSqlServer(identityConnection, sql => sql.MigrationsAssembly(migrationsAssembly));
+    });
 
 var app = builder.Build();
 
@@ -27,6 +39,8 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
+SeedData.InitializeDatabase(app);
+
 // add it to the middleware
 app.UseIdentityServer();
 
@@ -36,3 +50,6 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
+
+
+

@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  IdentityDB:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: IdentityDB
+    environment:
+      SA_PASSWORD: 'fakePassword@N0tReal'
+      ACCEPT_EULA: 'Y'
+    restart: always
+    ports:
+      - '1433:1433'
