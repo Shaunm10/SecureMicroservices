@@ -64,21 +64,25 @@ public class MovieApiService : IMovieApiService
     {
         var idpClient = this._httpClientFactory.CreateClient(ApiConfigurations.IDPClient);
 
+        // get the MetaData from the discovery document
         var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
         if (metaDataResponse.IsError)
         {
             throw new HttpRequestException("Something went wrong while requesting the access token");
         }
 
+        // get the access token from the HttpContext
         var accessToken =
-            await this._httpContextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+            await this._httpContextAccessor.HttpContext?.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
+        // get the userInfo passing the access token to the userInfo endpoint.
         var userInfoResponse = await idpClient.GetUserInfoAsync(new UserInfoRequest
         {
             Address = metaDataResponse.UserInfoEndpoint,
             Token = accessToken
         });
 
+        // if an error occurred
         if (userInfoResponse.IsError)
         {
             throw new HttpRequestException("Something went wrong while getting user info");
