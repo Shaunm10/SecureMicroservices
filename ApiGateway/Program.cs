@@ -10,6 +10,8 @@ builder.Services.AddOcelot();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
