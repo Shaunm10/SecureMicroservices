@@ -13,8 +13,14 @@
       ],
       "UpstreamPathTemplate": "/movies",
       "UpstreamHttpMethod": [
-        "GET","POST","PUT"
-      ]
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": []
+      }
     }
   ]
 }
