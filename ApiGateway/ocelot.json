@@ -11,7 +11,7 @@
           "Port": "5001"
         }
       ],
-      "UpstreamPathTemplate": "/movies",
+      "UpstreamPathTemplate": "/api/movies",
       "UpstreamHttpMethod": [
         "GET",
         "POST",

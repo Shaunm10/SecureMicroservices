@@ -105,15 +105,6 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-//app.UseStatusCodePages(async context =>
-//{
-//    // 403
-//    if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.Forbidden)
-//    {
-//        var foo = "bar";
-//    }
-//});
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
