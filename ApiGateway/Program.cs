@@ -1,4 +1,4 @@
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -35,6 +35,6 @@ app.UseEndpoints(endpoints =>
 
 // finally use the Ocelot gateway
 await app.UseOcelot();
-//app.MapGet("/", () => "Ocelot Gatway");
+app.MapGet("/", () => "Ocelot Gatway");
 
 app.Run();
