@@ -27,9 +27,19 @@ public class MovieApiService : IMovieApiService
     {
         var movieApi = this.GetProxy();
 
+        var userInfo = await this.GetUserInfoAsync();
+
+        string ownerName = null;
+        if (userInfo.UserDictionary.Keys.Contains("given_name"))
+        {
+            ownerName = userInfo.UserDictionary.FirstOrDefault(x => x.Key == "given_name").Value;
+        }
+
         var serviceMovies = await movieApi.GetMoviesAsync();
 
-        var moviesViewModels = serviceMovies.Select(m => this.Map(m));
+        var moviesViewModels = serviceMovies
+            .Select(m => this.Map(m))
+            .Where(m => ownerName == null || m.Owner?.ToLower() == ownerName.ToLower());
 
         return moviesViewModels.ToList();
     }

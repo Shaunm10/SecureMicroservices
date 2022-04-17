@@ -15,17 +15,17 @@ var migrationsAssembly = "IdentityServer";//typeof(Config).GetType().Assembly.Ge
 builder.Services.AddIdentityServer()
     .AddInMemoryClients(Config.Clients)
     .AddInMemoryApiScopes(Config.ApiScopes)
-    //.AddInMemoryApiResources(Config.ApiResources)
+    .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryIdentityResources(Config.IdentityResources)
-    //.AddTestUsers(Config.TestUsers)
+    .AddTestUsers(Config.TestUsers)
     .AddTestUsers(TestUsers.Users)
-    .AddDeveloperSigningCredential()
-    .AddConfigurationStore(options => {
-        options.ConfigureDbContext = d => d.UseSqlServer(identityConnection, 
-        sql => sql.MigrationsAssembly(migrationsAssembly));
-    }).AddOperationalStore(options => {
-        options.ConfigureDbContext = b => b.UseSqlServer(identityConnection, sql => sql.MigrationsAssembly(migrationsAssembly));
-    });
+    .AddDeveloperSigningCredential();
+    //.AddConfigurationStore(options => {
+    //    options.ConfigureDbContext = d => d.UseSqlServer(identityConnection, 
+    //    sql => sql.MigrationsAssembly(migrationsAssembly));
+    //}).AddOperationalStore(options => {
+    //    options.ConfigureDbContext = b => b.UseSqlServer(identityConnection, sql => sql.MigrationsAssembly(migrationsAssembly));
+    //});
 
 var app = builder.Build();
 
@@ -39,7 +39,7 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
-SeedData.InitializeDatabase(app);
+//SeedData.InitializeDatabase(app);
 
 // add it to the middleware
 app.UseIdentityServer();
